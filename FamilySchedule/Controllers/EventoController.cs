@@ -29,20 +29,18 @@ namespace FamilySchedule.Controllers
 
             return PartialView("_Crear");
         }
-        public async Task<IActionResult> Crear(EventArgs evento)
-        {
 
+        [HttpPost]
+        public async Task<IActionResult> Crear(EventoModel evento)
+        {
             if (ModelState.IsValid)
             {
                 _context.Add(evento);
                 await _context.SaveChangesAsync();
-
-                TempData["AlertMessage"] = "Evento Creado exitosamente";
                 return Json(new { success = true, message = "Evento creado exitosamente." });
             }
 
-            return PartialView("_Crear", evento);
-
+            return Json(new { success = false, message = "Datos inválidos." });
         }
 
         //metodo que valida que el evento que se edite exista mediante el id

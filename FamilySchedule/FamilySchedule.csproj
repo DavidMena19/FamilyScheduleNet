@@ -33,11 +33,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\ApplicationDveloperView\" />
+    <UpToDateCheckInput Remove="Views\Shared\_MostrarModal.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
-    <UpToDateCheckInput Remove="Views\Shared\_MostrarModal.cshtml" />
+    <ProjectReference Include="..\FamilySchedule.DataAccess\FamilySchedule.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>

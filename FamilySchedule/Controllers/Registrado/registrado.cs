@@ -22,7 +22,9 @@ namespace FamilySchedule.Controllers.Registrado
         {
             return View();
         }
+
         //metodo que busca y agrega a los familiares
+
         [HttpPost]       
         public async Task<IActionResult> MainUser(string correoUsuarioInvitado)
         {

@@ -13,7 +13,7 @@
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark ms-0">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">FSchedule</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,79 +21,90 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                            <li><a onclick="showInPopup('@Url.Action("Crear", "Evento", new { id = 0 }, Context.Request.Scheme)' ,'')" class="btn btn-sm btn-primary text-white"><i class="oi oi-plus"></i> Agregar un evento</a></li>
-                            <li><a href="@Url.Action("Crear", "Evento")" class="dropdown-item"> Planear Evento</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Opciones
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-start border-0 shadow-sm">
+                            <li><a href="@Url.Action("BuscarFamiliares", "registrado")" class="dropdown-item"><i class="oi oi-plus"></i> Agregar Familiar</a></li>
                             <li><a class="dropdown-item" href="#">Asignar Tarea</a></li>
                             <li><a class="dropdown-item" href="#">Family Schedule</a></li>
-                            <li><a class="btn btn-danger" href="@Url.Action("cerrarSeccion", "Registrado")"><i class="fa-solid fa-door-closed"></i></a></li>
                         </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-danger" href="@Url.Action("cerrarSeccion", "Registrado")"><i class="fa-solid fa-door-closed"></i></a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <div class="position-fixed end-0 translate-middle-y p-3">
-        <h2 class="notificationTitle">Notificaciones</h2>
-
-        @if (Model.Notificaciones != null && Model.Notificaciones.Any())
-        {
-            <ul class="list-group">
-                @foreach (var notificaciones in Model.Notificaciones)
-                {
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <strong>@notificaciones.Mensaje</strong>
-                        <div class="btn-group">
-                            <a asp-action="AceptarInvitacion" asp-route-id="@notificaciones.Id" class="btn btn-primary btn-sm">Aceptar</a>
-                            <a asp-action="RechazarInvitacion" asp-route-id="@notificaciones.Id" class="btn btn-danger btn-sm">Rechazar</a>
-                        </div>
-                    </li>
-                }
-            </ul>
-        }
-        else
-        {
-            <p><strong>No tienes notificaciones pendientes</strong></p>
-        }
-    </div>
-        <div class="card mt-4">
-            <div class="card-header text-center">
-                <h5>Lista de Eventos</h5>
-            </div>
-
-            <div class="table-responsive">
-                <table id="evento" class="table table-hover table-striped">
-                    <thead>
-                        <tr>
-                            <th>@Html.DisplayNameFor(model => model.Evento.FirstOrDefault().Titulo)</th>
-                            <th>@Html.DisplayNameFor(model => model.Evento.FirstOrDefault().Fecha)</th>
-                            <th>@Html.DisplayNameFor(model => model.Evento.FirstOrDefault().Creador)</th>
-                            <th>@Html.DisplayNameFor(model => model.Evento.FirstOrDefault().Descripcion)</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model.Evento)
-                        {
-                            <tr>
-                                <td><strong>@Html.DisplayFor(modelItem => item.Titulo)</strong></td>
-                                <td>@Html.DisplayFor(modelItem => item.Fecha)</td>
-                                <td>@Html.DisplayFor(modelItem => item.Creador)</td>
-                                <td>@Html.DisplayFor(modelItem => item.Descripcion)</td>
-                                <td>
-                                    <a onclick="showInPopup('@Url.Action("Edit", "Eventos", new { id = item.Id }, Context.Request.Scheme)' ,'')" class="btn btn-outline-warning btn-sm"><i class="oi oi-pencil"></i> Editar</a>
-                                    <button data-id="@item.Id" class="btn btn-outline-danger btn-sm deleteItem" data-bs-toggle="modal" data-bs-target="#deleteDialog"><i class="oi oi-trash"></i> Eliminar</button>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+    <div class="container-md-4 d-flex vh-100">
+        <!-- Notificaciones -->
+        <div class="notification-container bg-light border-end p-3" style="width: 300px; height: 100vh; overflow-y: auto;">
+            <h2 class="notificationTitle">Notificaciones</h2>
+            @if (Model.Notificaciones != null && Model.Notificaciones.Any())
+            {
+                <ul class="list-group">
+                    @foreach (var notificaciones in Model.Notificaciones)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>@notificaciones.Mensaje</strong>
+                            <div class="btn-group">
+                                <a asp-action="AceptarInvitacion" asp-route-id="@notificaciones.Id" class="btn btn-primary btn-sm">Aceptar</a>
+                                <a asp-action="RechazarInvitacion" asp-route-id="@notificaciones.Id" class="btn btn-danger btn-sm">Rechazar</a>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p><strong>No tienes notificaciones pendientes</strong></p>
+            }
         </div>
 
-   
+        <!-- Lista de Eventos -->
+        <div class=" allContainer flex-grow-1 d-flex">
+            <div class="card w-75">
+                <a onclick="showInPopup('@Url.Action("Crear", "Evento", new { id = 0 }, Context.Request.Scheme)' , '')" class="btn btn-sm btn-primary text-white mt-2"><i class="fa-solid fa-plus"></i> Planear un evento</a>
 
-   
+                <div class="card-header text-center">
+                    <h5>Lista de Eventos</h5>
+                </div>
+
+                <div class="list table-responsive">
+                    <table id="evento" class="table table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.Evento.FirstOrDefault().Titulo)</th>
+                                <th>@Html.DisplayNameFor(model => model.Evento.FirstOrDefault().Fecha)</th>
+                                <th>@Html.DisplayNameFor(model => model.Evento.FirstOrDefault().Creador)</th>
+                                <th>@Html.DisplayNameFor(model => model.Evento.FirstOrDefault().Descripcion)</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Evento)
+                            {
+                                <tr>
+                                    <td><strong>@Html.DisplayFor(modelItem => item.Titulo)</strong></td>
+                                    <td>@Html.DisplayFor(modelItem => item.Fecha)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Creador)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Descripcion)</td>
+                                    <td>
+                                        <a onclick="showInPopup('@Url.Action("Edit", "Eventos", new { id = item.Id }, Context.Request.Scheme)' , '')" class="btn btn-outline-warning btn-sm"><i class="oi oi-pencil"></i> Editar</a>
+                                        <button data-id="@item.Id" class="btn btn-outline-danger btn-sm deleteItem" data-bs-toggle="modal" data-bs-target="#deleteDialog"><i class="oi oi-trash"></i> Eliminar</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <partial name="_MostrarModal" /> 
    <partial name="ModalEliminar" /> 
 
