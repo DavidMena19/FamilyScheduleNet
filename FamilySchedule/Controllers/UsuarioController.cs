@@ -45,6 +45,7 @@ namespace FamilySchedule.Controllers
             return RedirectToAction("IndexRegistrado", "Registrado");
 
         }
+
         //metodos para crear usuario y vista
         public IActionResult RegistrarUsuario(){ 
             

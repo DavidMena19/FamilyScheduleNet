@@ -11,10 +11,10 @@ using Microsoft.Identity.Client;
 namespace FamilySchedule.Controllers.Registrado
 {
     
-    public class registrado : Controller
+    public class registradoController : Controller
     {
         private readonly ApplicationDbContext _context;
-        public registrado(ApplicationDbContext context)
+        public registradoController(ApplicationDbContext context)
         {
             _context = context;
         }

@@ -3,7 +3,7 @@
     ViewData["Title"] = "Crear";
     Layout = null;
 }
-<form id="crearEventoForm" asp-action="Crear" method="post">
+<form id="crearEventoForm" asp-action="CrearE" method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="form-group">
         <label></label>
@@ -20,11 +20,7 @@
         <textarea asp-for="Descripcion" class="form-control" placeholder="Descripción"></textarea>
         <span asp-validation-for="Descripcion" class="text-danger"></span>
     </div>
-    <div class="form-group">
-        <label></label>
-        <textarea asp-for="Creador" class="form-control" readonly></textarea>
-        <span asp-validation-for="Creador" class="text-danger"></span>
-    </div>
+   
     <div class="card-footer">
         <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-save"></i> Guardar</button>
         <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal"><i class="fa fa-ban"></i> Cancelar</button>

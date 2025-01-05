@@ -15,5 +15,23 @@ namespace FamilySchedule.Models.Context
         public DbSet<NotificacionesModel> Notificaciones { get; set; }
         public DbSet<TiposDeNotificaciones> TiposDeNotificaciones { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<EventoUsuario>()
+                .HasKey(em => new { em.EventoId, em.UsuarioId });
+
+            modelBuilder.Entity<EventoUsuario>()
+                .HasOne(em => em.Evento)
+                .WithMany(e => e.EventoUsuarios)
+                .HasForeignKey(em => em.EventoId);
+
+            modelBuilder.Entity<EventoUsuario>()
+                .HasOne(em => em.Usuario)
+                .WithMany(m => m.EventoUsuarios)
+                .HasForeignKey(em => em.UsuarioId);
+        }
+
     }
 }

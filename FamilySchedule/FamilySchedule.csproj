@@ -40,4 +40,11 @@
     <ProjectReference Include="..\FamilySchedule.DataAccess\FamilySchedule.DataAccess.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\Shared\_confirmAndBackBTN.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

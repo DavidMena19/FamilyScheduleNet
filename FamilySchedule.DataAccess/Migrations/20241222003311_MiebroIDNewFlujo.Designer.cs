@@ -4,6 +4,7 @@ using FamilySchedule.Models.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FamilySchedule.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241222003311_MiebroIDNewFlujo")]
+    partial class MiebroIDNewFlujo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,6 +44,9 @@ namespace FamilySchedule.Migrations
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("MiembroID")
+                        .HasColumnType("int");
+
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -48,24 +54,6 @@ namespace FamilySchedule.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Eventos");
-                });
-
-            modelBuilder.Entity("FamilySchedule.Models.EventoUsuario", b =>
-                {
-                    b.Property<int>("EventoId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UsuarioId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.HasKey("EventoId", "UsuarioId");
-
-                    b.HasIndex("UsuarioId");
-
-                    b.ToTable("EventoUsuario");
                 });
 
             modelBuilder.Entity("FamilySchedule.Models.NotificacionesModel", b =>
@@ -164,25 +152,6 @@ namespace FamilySchedule.Migrations
                     b.ToTable("Usuarios");
                 });
 
-            modelBuilder.Entity("FamilySchedule.Models.EventoUsuario", b =>
-                {
-                    b.HasOne("FamilySchedule.Models.EventoModel", "Evento")
-                        .WithMany("EventoUsuarios")
-                        .HasForeignKey("EventoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FamilySchedule.Models.Usuario", "Usuario")
-                        .WithMany("EventoUsuarios")
-                        .HasForeignKey("UsuarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Evento");
-
-                    b.Navigation("Usuario");
-                });
-
             modelBuilder.Entity("FamilySchedule.Models.NotificacionesModel", b =>
                 {
                     b.HasOne("FamilySchedule.Models.Usuario", "Usuario")
@@ -194,15 +163,8 @@ namespace FamilySchedule.Migrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("FamilySchedule.Models.EventoModel", b =>
-                {
-                    b.Navigation("EventoUsuarios");
-                });
-
             modelBuilder.Entity("FamilySchedule.Models.Usuario", b =>
                 {
-                    b.Navigation("EventoUsuarios");
-
                     b.Navigation("Notificaciones");
                 });
 #pragma warning restore 612, 618

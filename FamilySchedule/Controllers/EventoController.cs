@@ -9,10 +9,12 @@ namespace FamilySchedule.Controllers
 {
     public class EventoController : Controller
     {
+        public List<EventoUsuario> EventoUsuario { get; }
         private readonly ApplicationDbContext _context;
 
         public EventoController(ApplicationDbContext context)
         {
+            
             _context = context;
         }
 
@@ -30,14 +32,42 @@ namespace FamilySchedule.Controllers
             return PartialView("_Crear");
         }
 
+        //se crea el evento y se agrega el id de todos los miembros de la familia en el evento
+        //con el fin de que a cada familiar le salga el evento
+
         [HttpPost]
-        public async Task<IActionResult> Crear(EventoModel evento)
-        {
+        public async Task<IActionResult> CrearE (EventoModel evento)
+        {       
+
             if (ModelState.IsValid)
             {
+                var correoUsuario = HttpContext.Session.GetString("Correo");
+
+                //buscamos a todos los usuarios del grupo familiar del administrador 
+                var usuarioBD = await _context.Usuarios.FirstOrDefaultAsync(u => u.Admin2 == correoUsuario);
+
+                if(usuarioBD == null)
+                {
+                    return Json(new { success = false, message = "Usuario no encontrado" });
+                }
+                //se guarda el evento primero para que la base de datos le asigne un id al evento y luego se pueda guardar en eventoUsuario
+                evento.Creador = correoUsuario;
                 _context.Add(evento);
                 await _context.SaveChangesAsync();
-                return Json(new { success = true, message = "Evento creado exitosamente." });
+
+                //Instancia de EventoUsuario para agregar el evento y el usuario a la BD
+
+                var eventoUsuario = new EventoUsuario
+                {
+                    EventoId = evento.Id,
+                    UsuarioId = usuarioBD.Id
+                };
+
+                
+                _context.Add(eventoUsuario); //problema aqui
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, message = "Acción exitosa" });
             }
 
             return Json(new { success = false, message = "Datos inválidos." });
@@ -88,6 +118,7 @@ namespace FamilySchedule.Controllers
 
         public async Task<IActionResult> Eliminar(int id)
         {
+
             if (ModelState.IsValid)
             {
                 var eventoEncontrado = await _context.Eventos.FindAsync(id);
@@ -96,7 +127,7 @@ namespace FamilySchedule.Controllers
                 {
                     return NotFound();
                 }             
-                   
+                
                 _context.Eventos.Remove(eventoEncontrado);
                 await _context.SaveChangesAsync();
                 TempData["AlertMessage"] = "Evento Eliminado exitosamente";
@@ -110,6 +141,8 @@ namespace FamilySchedule.Controllers
 
         public async Task<IActionResult> GetEventos()
         {
+            var correoUsuario = HttpContext.Session.GetString("Correo");
+
             var eventos = await _context.Eventos
                 .Select(e => new {
                     id = e.Id,

@@ -23,9 +23,14 @@ namespace FamilySchedule.Models
         public string? ConfirmarContraseña { get; set; }
         public bool invitacionGrupo { get; set; }
         public string? Admin2 { get; set; }
-        //Relacion con las notificaciones
 
+        //Relacion con las notificaciones
         public ICollection<NotificacionesModel> Notificaciones { get; set; } = new List<NotificacionesModel>();
+
+        //Relacion con Evento Usuario
+
+        public ICollection<EventoUsuario> EventoUsuarios { get; set; }
+
 
     }
 
