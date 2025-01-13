@@ -1,5 +1,7 @@
 
+using FamilySchedule.Migrations;
 using FamilySchedule.Models.Context;
+using FamilySchedule.Models.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +23,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(o =>
     o.UseSqlServer(builder.Configuration.GetConnectionString("ConexionSql"));
 });
 
+#region Servicios
+
+
+builder.Services.AddScoped<EventoService>();
+
+
+#endregion 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

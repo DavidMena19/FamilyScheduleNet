@@ -1,6 +1,7 @@
 ﻿using FamilySchedule.Migrations;
 using FamilySchedule.Models;
 using FamilySchedule.Models.Context;
+using FamilySchedule.Models.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations.Internal;
@@ -21,7 +22,8 @@ namespace FamilySchedule.Controllers
         //metodo que retorna la lista de eventos
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Eventos.ToListAsync());
+            
+          return View();
         }
 
         //Metodos Get y post para crear un evento
@@ -50,6 +52,8 @@ namespace FamilySchedule.Controllers
                 {
                     return Json(new { success = false, message = "Usuario no encontrado" });
                 }
+
+               
                 //se guarda el evento primero para que la base de datos le asigne un id al evento y luego se pueda guardar en eventoUsuario
                 evento.Creador = correoUsuario;
                 _context.Add(evento);
@@ -63,9 +67,27 @@ namespace FamilySchedule.Controllers
                     UsuarioId = usuarioBD.Id
                 };
 
+                //se crea la notificacion
                 
-                _context.Add(eventoUsuario); //problema aqui
-                await _context.SaveChangesAsync();
+                //foreach (var usuario in Usuario)
+                //{
+                //    var notificacionEvento = new NotificacionesModel
+                //    {
+
+                //        Tipo = 3,
+                //        Mensaje = usuarioBD.Admin2 + " a creado un nuevo evento",
+                //        Fecha = DateTime.Now,
+                //        UsuarioCorreo = "string-null",
+                //        Admin = correoUsuario,
+
+
+                //    };
+                //}
+              
+
+                //_context.Add(notificacionEvento);
+                //_context.Add(eventoUsuario);
+                //await _context.SaveChangesAsync();
 
                 return Json(new { success = true, message = "Acción exitosa" });
             }
@@ -143,13 +165,19 @@ namespace FamilySchedule.Controllers
         {
             var correoUsuario = HttpContext.Session.GetString("Correo");
 
+            //obtener el grupo familiar del usuario
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Correo == correoUsuario);          
+            var gpDelUsuario = usuario.Admin2;
+
             var eventos = await _context.Eventos
+                .Where(e=> e.EventoUsuarios.Any(eu=> eu.UsuarioId == usuario.Id))
                 .Select(e => new {
                     id = e.Id,
                     title = e.Titulo,
                     start = e.Fecha.ToString("yyyy-MM-ddTHH:mm:ss"), // Formato ISO 8601
                     description = e.Descripcion
                 }).ToListAsync();
+
             return Json(eventos);
         }
 

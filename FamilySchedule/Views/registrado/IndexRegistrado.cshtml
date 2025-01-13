@@ -68,6 +68,7 @@
         <div class=" allContainer flex-grow-1 d-flex">
             <div class="card w-75">
                 <a onclick="showInPopup('@Url.Action("Crear", "Evento", new { id = 0 }, Context.Request.Scheme)' , '')" class="btn btn-sm btn-primary text-white mt-2"><i class="fa-solid fa-plus"></i> Planear un evento</a>
+                <a href="@Url.Action("IndexR", "registrado")" class="btn btn-sm btn-primary text-white mt-2"><i class="fa-solid fa-clock"></i> Cargar eventos</a>
 
                 <div class="card-header text-center">
                     <h5>Lista de Eventos</h5>
@@ -85,13 +86,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in Model.Evento)
+                            @foreach (var item in Model.EventoUsuarios)
                             {
                                 <tr>
-                                    <td><strong>@Html.DisplayFor(modelItem => item.Titulo)</strong></td>
-                                    <td>@Html.DisplayFor(modelItem => item.Fecha)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.Creador)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.Descripcion)</td>
+                                    <td><strong>@Html.DisplayFor(modelItem => item.Evento.Titulo)</strong></td>
+                                    <td>@Html.DisplayFor(modelItem => item.Evento.Fecha)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Evento.Creador)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Evento.Descripcion)</td>
                                     <td>
                                         <a onclick="showInPopup('@Url.Action("Edit", "Eventos", new { id = item.Id }, Context.Request.Scheme)' , '')" class="btn btn-warning btn-sm"><i class="oi oi-pencil"></i> Editar</a>
                                         <button data-id="@item.Id" class="btn btn-outline-danger btn-sm deleteItem" data-bs-toggle="modal" data-bs-target="#deleteDialog"><i class="oi oi-trash"></i> Eliminar</button>
@@ -135,6 +136,17 @@
         </script>
     }
     
+    @if (TempData["error"] != null)
+    {
+        <script>
+            Swal.fire({
+                title: "ERROR!",
+                text: "@TempData["ErrorInvitacion"]",
+                icon: "error",
+                confirmButtonText: 'OK D:'
+            });
+        </script>
+    }
      
 
     @if (TempData["AlertMessage"] != null)

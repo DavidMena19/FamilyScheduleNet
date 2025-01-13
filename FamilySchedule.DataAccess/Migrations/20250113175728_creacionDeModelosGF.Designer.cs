@@ -4,6 +4,7 @@ using FamilySchedule.Models.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FamilySchedule.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250113175728_creacionDeModelosGF")]
+    partial class creacionDeModelosGF
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -245,7 +248,7 @@ namespace FamilySchedule.Migrations
             modelBuilder.Entity("FamilySchedule.Models.usuarioGFModel", b =>
                 {
                     b.HasOne("FamilySchedule.Models.GFamiliaresModel", "grupoFamiliar")
-                        .WithMany("UsuariosFamiliar")
+                        .WithMany("Usuarios")
                         .HasForeignKey("grupoFamiliarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -268,7 +271,7 @@ namespace FamilySchedule.Migrations
 
             modelBuilder.Entity("FamilySchedule.Models.GFamiliaresModel", b =>
                 {
-                    b.Navigation("UsuariosFamiliar");
+                    b.Navigation("Usuarios");
                 });
 
             modelBuilder.Entity("FamilySchedule.Models.Usuario", b =>

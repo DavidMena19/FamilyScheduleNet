@@ -29,7 +29,7 @@ namespace FamilySchedule.Models
 
         //Relacion con Evento Usuario
 
-        public ICollection<EventoUsuario> EventoUsuarios { get; set; }
+        public ICollection<EventoUsuario>? EventoUsuarios { get; set; }
 
 
     }

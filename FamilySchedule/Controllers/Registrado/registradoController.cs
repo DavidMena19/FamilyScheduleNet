@@ -1,31 +1,68 @@
-﻿using FamilySchedule.Migrations;
+﻿
+using FamilySchedule.Migrations;
 using FamilySchedule.Models;
 using FamilySchedule.Models.Context;
+using FamilySchedule.Models.Services;
 using FamilySchedule.Models.ViewModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using System.Text.RegularExpressions;
 
 
 namespace FamilySchedule.Controllers.Registrado
 {
-    
+
     public class registradoController : Controller
     {
         private readonly ApplicationDbContext _context;
-        public registradoController(ApplicationDbContext context)
+        private readonly EventoService _evento;
+
+        public registradoController(ApplicationDbContext context, EventoService evento)
         {
             _context = context;
-        }
-        public IActionResult IndexRegistrado()
-        {
-            return View();
+            _evento = evento;
         }
 
+        public async Task<IActionResult> IndexR()
+        {
+
+            var correoUsuario = HttpContext.Session.GetString("Correo");
+
+            // Busca el usuario en la base de datos
+            var buscarUsuarioBd = await _context.Usuarios.FirstOrDefaultAsync(u => u.Correo == correoUsuario);
+            if (buscarUsuarioBd.Admin2 == null)
+            {
+                TempData["error"] = "No hay eventos asociados a tu cuenta.";
+                return View();
+            }
+
+            //TO DO
+            //cuando se cree un evento se debe agregar en notificaciones en la base de datos
+
+            var notificaciones = await _context.Notificaciones
+                .Where(n => n.UsuarioCorreo == correoUsuario)
+                .ToListAsync();
+
+            var eventos = await _evento.GetEventosAsync();
+
+            // Filtra los eventos por el grupo familiar del usuario
+            var eventosFiltrados = eventos.Where(e => e.Id == buscarUsuarioBd.Id).ToList();
+
+            // Prepara el ViewModel
+            var viewModel = new EventoNotificacionesViewModel
+            {
+                Notificaciones = notificaciones,
+                Evento = eventosFiltrados
+            };
+
+            // Retorna la vista con el ViewModel
+            return View(viewModel);
+        }
         //metodo que busca y agrega a los familiares
 
-        [HttpPost]       
+        [HttpPost]
         public async Task<IActionResult> MainUser(string correoUsuarioInvitado)
         {
             var correoUsuario = HttpContext.Session.GetString("Correo");
@@ -59,12 +96,33 @@ namespace FamilySchedule.Controllers.Registrado
                         UsuarioCorreo = correoUsuarioInvitado,
                         Admin = correoUsuario
                     };
+                    var grupoFamiliar = await _context.GFamiliares.FirstOrDefaultAsync(g => g.CorreoAdmin == correoUsuario);
+                    if (grupoFamiliar == null)
+                    {
+                        var GrupoFamiliarModel = new GFamiliaresModel
+                        {
+                            FechaCreacion = DateTime.Now,
+                            CorreoAdmin = correoUsuario, // Suponiendo que usas autenticación
+
+
+                        };
+                    }
+
+                    var usuarioGrupo = new usuarioGFModel
+                    {
+                        GrupoId = grupoFamiliar.Id,
+                        usuarioID = usuarioBd.Id
+                    };
+
+                    
 
                     // Actualizar directamente el objeto usuarioBd
                     usuarioBd.Admin2 = correoUsuario;
                     usuarioBd.invitacionGrupo = true;
 
                     // Agregar la notificación y actualizar el usuario
+                    _context.UsuarioGFModel.Add(usuarioGrupo);
+                    _context.GFamiliares.Add(grupoFamiliar);
                     _context.Notificaciones.Add(notificacionesFamiliares);
                     _context.Usuarios.Update(usuarioBd);
                     await _context.SaveChangesAsync();
@@ -82,7 +140,7 @@ namespace FamilySchedule.Controllers.Registrado
                 TempData["errorInvitacion"] = "Ocurrió un error al enviar la invitación";
             }
             return View("BuscarFamiliares");
-    }
+        }
 
         public async Task<IActionResult> cerrarSeccionAsync()
         {
@@ -110,7 +168,7 @@ namespace FamilySchedule.Controllers.Registrado
                 _context.Notificaciones.Update(buscarInvitacionBd);
                 _context.Usuarios.Update(buscarUsuario);
 
-                await _context.SaveChangesAsync();             
+                await _context.SaveChangesAsync();
             }
             catch (Exception ex) {
 
@@ -121,18 +179,18 @@ namespace FamilySchedule.Controllers.Registrado
             TempData["Exito"] = "La invitación ha sido aceptada exitosamente.";
             return RedirectToAction("IndexRegistrado");
         }
-        public async Task<IActionResult> RechazarInvitacion(int id) { 
+        public async Task<IActionResult> RechazarInvitacion(int id) {
 
             var correoUsuario = HttpContext.Session.GetString("Correo");
             var buscarInvitacionBd = await _context.Notificaciones.FindAsync(id);
             var buscarUsuarioBd = await _context.Usuarios.FirstOrDefaultAsync(u => u.Correo == correoUsuario);
-            
+
             if (buscarInvitacionBd != null)
             {
-                
+
                 _context.Notificaciones.Remove(buscarInvitacionBd);
                 buscarUsuarioBd.invitacionGrupo = false;
-                
+
                 _context.Usuarios.Update(buscarUsuarioBd);
                 await _context.SaveChangesAsync();
                 //TODO no funcionan las alertas
@@ -144,45 +202,20 @@ namespace FamilySchedule.Controllers.Registrado
                 TempData["Inesperado"] = "error inesperado";
                 return View();
             }
-            
+
             return RedirectToAction("IndexRegistrado");
-            
+
         }
         // metodo que  muestra las notificaciones que cada usuario tiene
+
         [HttpGet]
         public async Task<IActionResult> IndexRegistrado(Usuario usuario)
         {
-            var correoUsuario = HttpContext.Session.GetString("Correo");
+           return View();
+        }
 
-            // Verifica si el correo está disponible
-            if (string.IsNullOrEmpty(correoUsuario))
-            {
-                TempData["error"] = "Correo no disponible en la sesión.";
-                return RedirectToAction("Index", "Evento");
-            }
-
-            // Busca el usuario en la base de datos
-            var buscarUsuarioBd = await _context.Usuarios.FirstOrDefaultAsync(u => u.Correo == correoUsuario);
-
-            if (buscarUsuarioBd != null && buscarUsuarioBd.invitacionGrupo != false)
-            {
-                var notificaciones = await _context.Notificaciones
-                    .Where(n => n.UsuarioCorreo == correoUsuario)
-                    .ToListAsync();
-
-                var eventos = await _context.Eventos.ToListAsync(); // Obtener los eventos
-
-                var viewModel = new EventoNotificacionesViewModel
-                {
-                    Notificaciones = notificaciones,
-                    Evento = eventos 
-                };
-
-                return View(viewModel);
-            }
-
-            // En caso de que no haya notificaciones
-            return View(new EventoNotificacionesViewModel { Notificaciones = new List<NotificacionesModel>() });
+            //// En caso de que no haya notificaciones
+            //return View(new EventoNotificacionesViewModel { Notificaciones = new List<NotificacionesModel>() });
             //var correoUsuario = HttpContext.Session.GetString("Correo");
 
             ////Verifica si el correo está disponible
@@ -213,11 +246,16 @@ namespace FamilySchedule.Controllers.Registrado
             //}
 
             //   return View();
+
+
         }
+}
+
+
             
-    }
+    
             
- }
+ 
 
 
 

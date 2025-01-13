@@ -6,5 +6,6 @@ namespace FamilySchedule.Models.ViewModel
     {
         public List<NotificacionesModel> Notificaciones { get; set; } = new List<NotificacionesModel>();
         public List<EventoModel> Evento { get; set; } = new List<EventoModel>();
+        public List<EventoUsuario> EventoUsuarios { get; set; } = new List<EventoUsuario>();
     }
 }

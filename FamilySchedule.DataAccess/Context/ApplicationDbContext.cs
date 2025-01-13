@@ -14,6 +14,9 @@ namespace FamilySchedule.Models.Context
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<NotificacionesModel> Notificaciones { get; set; }
         public DbSet<TiposDeNotificaciones> TiposDeNotificaciones { get; set; }
+        public DbSet<EventoUsuario> EventoUsuario { get; set; }
+        public DbSet<usuarioGFModel> UsuarioGFModel { get; set; }
+        public DbSet<GFamiliaresModel> GFamiliares { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
